@@ -3,6 +3,7 @@
 DOCKER=docker
 IMAGE=jlabusch/wrms-dash-sync
 NAME=wrms-dash-sync
+CONFIG_VOL=wrms-dash-config-vol
 NETWORK=wrms-dash-net
 
 build:
@@ -19,7 +20,7 @@ start:
         --env DEBUG \
         --network $(NETWORK) \
         --volume /etc/localtime:/etc/localtime:ro \
-        --volume $$PWD/config/default.json:/opt/config/default.json:ro \
+        --volume $(CONFIG_VOL):/opt/config:ro \
         --rm \
         $(IMAGE)
 	$(DOCKER) logs -f $(NAME) &
