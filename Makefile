@@ -22,7 +22,7 @@ start:
         --volume $$PWD/config/default.json:/opt/config/default.json:ro \
         --rm \
         $(IMAGE)
-	$(DOCKER) logs -f $(NAME)
+	$(DOCKER) logs -f $(NAME) &
 
 stop:
 	$(DOCKER) stop $(NAME)
