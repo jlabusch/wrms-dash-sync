@@ -1,11 +1,11 @@
 {
-  "name": "wrms-dash-api-cache",
+  "name": "wrms-dash-sync",
   "version": "1.0.0",
-  "description": "Catalyst EU dashboard cache",
+  "description": "Catalyst EU dashboard sync process",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/jlabusch/wrms-dash.git"
+    "url": "git://github.com/jlabusch/wrms-dash-sync.git"
   },
   "scripts": {
     "start": "node ./index.js"
