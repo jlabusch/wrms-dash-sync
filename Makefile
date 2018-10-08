@@ -12,7 +12,7 @@ build:
 network:
 	$(DOCKER) network list | grep -q $(NETWORK) || $(DOCKER) network create $(NETWORK)
 
-start:
+start: network
 	$(DOCKER) run \
         --name $(NAME) \
         --detach  \
