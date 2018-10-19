@@ -8,4 +8,4 @@ RUN npm install
 
 COPY . /opt/
 
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npm"]

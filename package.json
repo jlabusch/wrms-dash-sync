@@ -8,6 +8,7 @@
     "url": "git://github.com/jlabusch/wrms-dash-sync.git"
   },
   "scripts": {
+    "prestart": "./get_config_from_env.sh",
     "start": "node ./index.js"
   },
   "author": "Jacques Labuschagne <jlabusch@acm.org>",
