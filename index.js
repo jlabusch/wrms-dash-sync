@@ -31,6 +31,11 @@ server.post('/query', (req, res, next) => {
     }
 });
 
+server.get('/org_data', (req, res, next) => {
+    res.charSet('utf-8');
+    res.json({result: util.org_data.active().data});
+    next && next(false);
+});
 
 util.server.main(
     config.get('api-cache.server.listen_port'),
