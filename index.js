@@ -1,9 +1,6 @@
 var config  = require('config'),
-    cache   = require('wrms-dash-db').cache,
-    db      = require('wrms-dash-db').db.create(),
     store   = require('./lib/data_store'),
-    util    = require('wrms-dash-util'),
-    restify = require('restify');
+    util    = require('wrms-dash-util');
 
 'use strict';
 
@@ -39,6 +36,9 @@ server.get('/org_data', (req, res, next) => {
 
 util.server.main(
     config.get('api-cache.server.listen_port'),
-    () => { require('./lib/data_sync').unpause() }
+    () => {
+        require('wrms-dash-db').db.create();
+        require('./lib/data_sync').unpause();
+    }
 );
 

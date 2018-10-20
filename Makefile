@@ -1,4 +1,4 @@
-.PHONY: deps build network start stop clean
+.PHONY: deps build network test start stop clean
 
 DOCKER=docker
 IMAGE=jlabusch/wrms-dash-sync
@@ -17,6 +17,19 @@ build: deps
 network:
 	$(BUILD) network create $(NETWORK)
 
+test:
+	@mkdir -p ./coverage
+	$(DOCKER) run \
+        -it \
+        --env DEBUG \
+        --env CONFIG \
+        --volume /etc/localtime:/etc/localtime:ro \
+        --volume $$PWD/coverage:/opt/coverage \
+        --volume $$PWD/lib:/opt/lib \
+        --volume $$PWD/test:/opt/test \
+        --rm \
+        $(IMAGE) test
+
 start: network
 	$(DOCKER) run \
         --name $(NAME) \
@@ -34,6 +47,7 @@ stop:
 	$(DOCKER) stop $(NAME)
 
 clean:
-	@rm -fr ./config
+	@test -d ./coverage && $(DOCKER) run -it --rm -v $$PWD/coverage:/coverage alpine chown -R $$(id -u):$$(id -g) /coverage || :
+	@rm -fr ./coverage
 	$(BUILD) image delete $(IMAGE) || :
 

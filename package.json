@@ -7,9 +7,15 @@
     "type": "git",
     "url": "git://github.com/jlabusch/wrms-dash-sync.git"
   },
+  "engines": {
+    "node": ">=8.0.0"
+  },
   "scripts": {
     "prestart": "./get_config_from_env.sh",
-    "start": "node ./index.js"
+    "start": "node ./index.js",
+    "pretest": "./get_config_from_env.sh",
+    "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "posttest": "./node_modules/.bin/eslint index.js lib/*js"
   },
   "author": "Jacques Labuschagne <jlabusch@acm.org>",
   "license": "GPL-3.0",
@@ -20,5 +26,14 @@
     "restify": "~4.3",
     "wrms-dash-util": "https://github.com/jlabusch/wrms-dash-util.git#af51bfd67f43af85323",
     "wrms-dash-db": "https://github.com/jlabusch/wrms-dash-db.git#8da5f6eadc4462645a38"
+  },
+  "devDependencies": {
+    "wrms-dash-test-lib": "https://github.com/jlabusch/wrms-dash-test-lib.git#c68528541091e2bf68",
+    "mocha": "~5",
+    "should": "~13",
+    "istanbul": "~0.4",
+    "eslint": "~5",
+    "eslint-plugin-promise": "~4",
+    "eslint-plugin-node": "~7"
   }
 }
