@@ -34,11 +34,13 @@ server.get('/org_data', (req, res, next) => {
     next && next(false);
 });
 
-util.server.main(
-    config.get('api-cache.server.listen_port'),
-    () => {
-        require('wrms-dash-db').db.create();
-        require('./lib/data_sync').unpause();
-    }
-);
+if (!require.main.filename.match(/mocha/)){
+    util.server.main(
+        config.get('api-cache.server.listen_port'),
+        () => {
+            require('wrms-dash-db').db.create();
+            require('./lib/data_sync').unpause();
+        }
+    );
+}
 

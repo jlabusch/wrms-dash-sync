@@ -2,17 +2,113 @@ var assert  = require('assert'),
     testlib = require('wrms-dash-test-lib'),
     should  = require('should'),
     dsu     = require('../lib/data_sync_utils'),
+    sql     = require('../lib/data_store_sql'),
     promise = require('../lib/data_store_promise'),
     util    = require('wrms-dash-util');
 
 describe('data_sync_utils', function(){
-    describe.skip('add_quote', function(){
+    describe('add_quote', function(){
+        it('should create a db statement', function(done){
+            let a = null;
+
+            promise.load_test_hook({
+                fn: args => { a = args }
+            });
+
+            dsu.add_quote({quote_id: 'fred', request_id: 4}, {}, {id: 'bob'})
+                .then(() => {
+                    a[0].should.equal(sql.add_quote);
+                    a[1].should.equal('fred');
+                    a[2].should.equal('bob');
+                    a[3].should.equal(4);
+                    a[6].should.equal(0);
+                    done();
+                });
+        });
     });
-    describe.skip('quote_is_valid', function(){
+    describe('quote_is_valid', function(){
+        it('should pass approved and not expired quotes', function(done){
+            dsu.quote_is_valid({approved_by_id: 1, expired: false}).should.equal(true);
+            done();
+        });
+        it('should ignore expiry for qpproved quotes', function(done){
+            dsu.quote_is_valid({approved_by_id: 1, expired: true}).should.equal(true);
+            done();
+        });
+        it('should pass unapproved and not expired quotes', function(done){
+            dsu.quote_is_valid({approved_by_id: null, expired: false}).should.equal(true);
+            done();
+        });
+        it('should fail unapproved and expired quotes', function(done){
+            dsu.quote_is_valid({approved_by_id: null, expired: true}).should.equal(false);
+            done();
+        });
     });
-    describe.skip('modify_budget_for_quote', function(){
+    describe('modify_budget_for_quote', function(){
+        it('should modify additional_hours for additional quotes', function(done){
+            let modified_additional = false;
+
+            promise.load_test_hook({
+                fn: args => {
+                    modified_additional = !!args[0].match(/additional_hours=/)
+                }
+            });
+
+            dsu.modify_budget_for_quote({}, {}, {additional: true})
+                .then(() => {
+                    modified_additional.should.equal(true);
+                    done();
+                });
+        });
+        it('should modify base_hours_spent for non-additional quotes', function(done){
+            let modified_base = false;
+
+            promise.load_test_hook({
+                fn: args => {
+                    modified_base = !!args[0].match(/base_hours_spent=/)
+                }
+            });
+
+            dsu.modify_budget_for_quote({}, {}, {additional: false})
+                .then(() => {
+                    modified_base.should.equal(true);
+                    done();
+                });
+        });
     });
-    describe.skip('find_last_row_for_this_wr', function(){
+    describe('find_last_row_for_this_wr', function(){
+        it('should handle happy path', function(done){
+            let arr = [
+                {request_id: 4},
+                {request_id: 4},
+                {request_id: 4},
+                {request_id: 4},
+                {request_id: 5}
+            ];
+            let n = dsu.find_last_row_for_this_wr(arr, 0);
+            n.should.equal(3);
+            done();
+        });
+        it('should handle one occurrence', function(done){
+            let arr = [
+                {request_id: 4},
+                {request_id: 5},
+            ];
+            let n = dsu.find_last_row_for_this_wr(arr, 0);
+            n.should.equal(0);
+            done();
+        });
+        it('should handle last WR in list', function(done){
+            let arr = [
+                {request_id: 4},
+                {request_id: 4},
+                {request_id: 4},
+                {request_id: 4},
+            ];
+            let n = dsu.find_last_row_for_this_wr(arr, 0);
+            n.should.equal(arr.length - 1);
+            done();
+        });
     });
     describe('make_budget_name_and_increment_date', function(){
         it('should handle monthly types', function(done){
@@ -68,7 +164,44 @@ describe('data_sync_utils', function(){
             done();
         });
     });
-    describe.skip('add_budgets_for_contract', function(){
+    describe('add_budgets_for_contract', function(){
+        it('should add short monthly contract', function(done){
+            let acme = testlib.cp(testlib.get_test_org({org_id:100}));
+
+            acme.type = 'monthly';
+            acme.start_date = '1 April 2017';
+            acme.end_date = '31 May 2017';
+
+            let args_list = [],
+                gather = function(a){ args_list.push(a) };
+
+            promise.load_test_hook({ fn: gather });
+            promise.load_test_hook({ fn: gather });
+            promise.load_test_hook({ fn: gather });
+            promise.load_test_hook({ fn: gather });
+
+            dsu.add_budgets_for_contract({}, acme)
+                .then(() => {
+                    args_list.length.should.equal(4);
+                    args_list[0][0].should.equal(sql.add_budget);
+                    Array.isArray(args_list[0][1].match(/2017-4/)).should.equal(true);
+                    args_list[1][0].should.equal(sql.add_contract_budget_link);
+                    args_list[2][0].should.equal(sql.add_budget);
+                    Array.isArray(args_list[2][1].match(/2017-5/)).should.equal(true);
+                    args_list[3][0].should.equal(sql.add_contract_budget_link);
+                    done();
+                });
+        });
+        it('should handle bad contract types', function(done){
+            let acme = testlib.cp(testlib.get_test_org({org_id:100}));
+
+            acme.type = 'badness';
+
+            let err = dsu.add_budgets_for_contract({}, acme);
+            should.exist(err);
+            Array.isArray(err.message.match(/Unsupported contract type/)).should.equal(true);
+            done();
+        });
     });
     describe('add_new_contract_and_systems', function(){
         it('should handle single systems', function(done){
@@ -228,6 +361,38 @@ describe('data_sync_utils', function(){
             let x = dsu.set_wr_tags_from_string({}, "a b c Maintenance d");
             x.unchargeable.should.equal(true);
             done();
+        });
+    });
+    describe('dump', function(){
+        it('should be quiet when needed', function(done){
+            dsu.dump({}, 'LABEL');
+            done();
+        });
+        it('should handle errors', function(done){
+            dsu.dump(
+                {
+                    all: function(str, handler){
+                        handler(new Error('test error'));
+                    }
+                },
+                'LABEL',
+                true
+            );
+            setTimeout(done, 100);
+        });
+        it('should not blow up', function(done){
+            dsu.dump(
+                {
+                    all: function(str, handler){
+                        // Really not much to test here...
+                        (Object.values(sql.dump).includes(str)).should.equal(true);
+                        handler(null, [1]);
+                    }
+                },
+                'LABEL',
+                true
+            );
+            setTimeout(done, 100);
         });
     });
 });

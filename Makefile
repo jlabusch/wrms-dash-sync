@@ -1,4 +1,4 @@
-.PHONY: deps build network test start stop clean
+.PHONY: deps build network test start stop clean test-clean
 
 DOCKER=docker
 IMAGE=jlabusch/wrms-dash-sync
@@ -46,8 +46,10 @@ start: network
 stop:
 	$(DOCKER) stop $(NAME)
 
-clean:
+test-clean:
 	@test -d ./coverage && $(DOCKER) run -it --rm -v $$PWD/coverage:/coverage alpine chown -R $$(id -u):$$(id -g) /coverage || :
 	@rm -fr ./coverage
+
+clean: test-clean
 	$(BUILD) image delete $(IMAGE) || :
 
