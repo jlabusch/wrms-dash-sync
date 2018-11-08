@@ -25,7 +25,7 @@
     "request": "~2",
     "restify": "~4.3",
     "wrms-dash-util": "https://github.com/jlabusch/wrms-dash-util.git#16c51eaffa84fe5b1c",
-    "wrms-dash-db": "https://github.com/jlabusch/wrms-dash-db.git#8da5f6eadc4462645a38"
+    "wrms-dash-db": "https://github.com/jlabusch/wrms-dash-db.git#3a63fa88d85c51855"
   },
   "devDependencies": {
     "wrms-dash-test-lib": "https://github.com/jlabusch/wrms-dash-test-lib.git#6a1ec905c07ff91b8a",
