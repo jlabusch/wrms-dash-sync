@@ -26,21 +26,21 @@ describe('data_sync_utils', function(){
                 });
         });
     });
-    describe('quote_is_valid', function(){
+    describe('quote_may_affect_budget', function(){
         it('should pass approved and not expired quotes', function(done){
-            dsu.quote_is_valid({approved_by_id: 1, expired: false}).should.equal(true);
+            dsu.quote_may_affect_budget({approved_by_id: 1, expired: false}).should.equal(true);
             done();
         });
         it('should ignore expiry for qpproved quotes', function(done){
-            dsu.quote_is_valid({approved_by_id: 1, expired: true}).should.equal(true);
+            dsu.quote_may_affect_budget({approved_by_id: 1, expired: true}).should.equal(true);
             done();
         });
         it('should pass unapproved and not expired quotes', function(done){
-            dsu.quote_is_valid({approved_by_id: null, expired: false}).should.equal(true);
+            dsu.quote_may_affect_budget({approved_by_id: null, expired: false}).should.equal(true);
             done();
         });
         it('should fail unapproved and expired quotes', function(done){
-            dsu.quote_is_valid({approved_by_id: null, expired: true}).should.equal(false);
+            dsu.quote_may_affect_budget({approved_by_id: null, expired: true}).should.equal(false);
             done();
         });
     });
