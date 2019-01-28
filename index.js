@@ -6,6 +6,7 @@ var config  = require('config'),
 
 var server = util.server.create('wrms-dash-api-cache', [config.get('api-cache.server.version')]);
 
+// Example usage: curl -sd '{"query":["select 1"]}' localhost/query | python -m json.tool
 server.post('/query', (req, res, next) => {
     util.log_debug(__filename, '/query ' + JSON.stringify(req.body));
 
@@ -13,7 +14,7 @@ server.post('/query', (req, res, next) => {
 
     json.query.push(function(err, data){
         let r = {error: err, result: data};
-        util.log_debug(__filename, '/query response is ' + JSON.stringify(r));
+        util.log_debug(__filename, '/query response is ' + JSON.stringify(r), !!err);
         res.json(r);
         next && next(false);
     });
