@@ -20,20 +20,20 @@
   "author": "Jacques Labuschagne <jlabusch@acm.org>",
   "license": "GPL-3.0",
   "dependencies": {
-    "config": "~1",
-    "sqlite3": "~4",
-    "request": "~2",
-    "restify": "~4.3",
-    "wrms-dash-util": "https://github.com/jlabusch/wrms-dash-util.git#16c51eaffa84fe5b1c",
-    "wrms-dash-db": "https://github.com/jlabusch/wrms-dash-db.git#3a63fa88d85c51855"
+    "config": "~3.3",
+    "sqlite3": "~5",
+    "got": "~11.7",
+    "restify": "~8.5",
+    "wrms-dash-util": "https://github.com/jlabusch/wrms-dash-util.git#85de531321efbc",
+    "wrms-dash-db": "https://github.com/jlabusch/wrms-dash-db.git#ca1a6211cb76e6755"
   },
   "devDependencies": {
     "wrms-dash-test-lib": "https://github.com/jlabusch/wrms-dash-test-lib.git#6a1ec905c07ff91b8a",
-    "mocha": "~5",
+    "mocha": "~8",
     "should": "~13",
-    "nyc": "~13",
-    "eslint": "~5",
+    "nyc": "~15",
+    "eslint": "~7",
     "eslint-plugin-promise": "~4",
-    "eslint-plugin-node": "~7"
+    "eslint-plugin-node": "~11"
   }
 }
